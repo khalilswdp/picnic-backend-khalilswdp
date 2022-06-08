@@ -41,6 +41,9 @@ public class ConcreteStreamProcessor implements StreamProcessor {
             }
             // Unmarshal/Deserialize the JSON. and create a Pick object. and add it to the picks list
             // Pick pick = Pick.fromJson(line); ? (make each object have code responsible for marshalling its properties)
+            Pick pick = new Pick();
+            picks.add(pick);
+
         }
 
         Stream<Pick> picksStream = picks.stream()
@@ -48,7 +51,7 @@ public class ConcreteStreamProcessor implements StreamProcessor {
         picksStream.forEach(pick -> pick.getArticle().makeNameUpperCase());
         Map<Picker, List<Pick>> groupedPicksByPicker = picksStream.collect(Collectors.groupingBy(Pick::getPicker));
         groupedPicksByPicker.forEach((id, picksByPicker) -> picksByPicker.sort(Comparator.comparing(Pick::getTimestamp)));
-        // Marshal/Serialize the groupedPicksByPicker to JSON, according to the given standard
+        // Marshal/Serialize the groupedPicksByPicker to JSON, and write it to the sink, according to the given standard
         // Or introduce our own class to represent the output. And to be filled with the data from the groupedPicksByPicker
 
 
