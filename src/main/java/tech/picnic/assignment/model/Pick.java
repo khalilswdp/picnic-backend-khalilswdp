@@ -1,5 +1,6 @@
 package tech.picnic.assignment.model;
 
+import com.google.gson.Gson;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,4 +15,10 @@ public class Pick {
     private Article article;
     private int quantity;
 
+    public static Pick fromJson(String line) throws Exception {
+        Gson gson = new Gson();
+        Pick pick = gson.fromJson(line, Pick.class);
+        System.out.println(pick);
+        return pick;
+    }
 }

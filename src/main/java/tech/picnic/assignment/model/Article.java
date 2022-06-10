@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 public class Article {
     private String id;
     private String name;
-    private String temperatureZone;
+    private String temperature_zone;
 
     // method to change the name of the article to upper case
     public void makeNameUpperCase() {
