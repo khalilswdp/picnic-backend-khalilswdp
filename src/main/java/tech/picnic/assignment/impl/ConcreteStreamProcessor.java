@@ -53,41 +53,23 @@ public class ConcreteStreamProcessor implements StreamProcessor {
         }
         reader.close();
 
-
-        // Filter and Make Article Name Upper Case
-        Stream<Pick> picksStream = picks.stream()
+        List<PickerProcessedInput> pickerProcessedInputs = picks.stream()
                 .filter(pick -> pick.getArticle().getTemperature_zone().equals("ambient"))
-                .peek(pick -> pick.getArticle().makeNameUpperCase());
-
-        // Group by Picker
-        Map<Picker, List<Pick>> groupedPicksByPicker = picksStream.collect(Collectors.groupingBy(Pick::getPicker));
-
-        // Sort Picks by Timestamp
-        groupedPicksByPicker.forEach((id, picksByPicker) -> picksByPicker.sort(Comparator.comparing(Pick::getTimestamp)));
-
-        // The Pickers must be sorted chronologically (ascending) by their active_since timestamp, breaking ties by ID.
-        List<Picker> sortedPickers = groupedPicksByPicker.keySet().stream()
-                .sorted(Comparator.comparing(Picker::getActive_since).thenComparing(Picker::getId))
+                .peek(pick -> pick.getArticle().makeNameUpperCase())
+                .collect(Collectors.groupingBy(Pick::getPicker))
+                .entrySet().stream()
+                .map(entry -> new PickerProcessedInput(
+                        entry.getKey().getId(),
+                        entry.getKey().getName(),
+                        entry.getKey().getActive_since(),
+                        entry.getValue().stream().map(
+                                pick -> new ArticleProcessedInput(
+                                        pick.getArticle().getName(),
+                                        pick.getTimestamp())).collect(Collectors.toList())))
+                .sorted(Comparator.comparing(PickerProcessedInput::getActive_since).thenComparing(PickerProcessedInput::getId))
                 .collect(Collectors.toList());
 
-        // Map the previous into a list of processedinput
-        List<PickerProcessedInput> pickerProcessedInputs = new ArrayList<>();
-        for (Picker picker : sortedPickers) {
-            List<Pick> picksByPicker = groupedPicksByPicker.get(picker);
-            pickerProcessedInputs.add(
-                    new PickerProcessedInput(
-                            picker.getName(),
-                            picker.getActive_since(),
-                            picksByPicker.stream().map(
-                                    pick -> new ArticleProcessedInput(
-                                            pick.getArticle().getName(),
-                                            pick.getTimestamp())).collect(Collectors.toList())));
-        }
-        
-        
-        // Marshal/Serialize the groupedPicksByPicker to JSON, and write it to the sink, according to the given standard
-        // Or introduce our own class to represent the output. And to be filled with the data from the groupedPicksByPicker
-        // and the sortedPickers.
+
         toJson(sink, pickerProcessedInputs);
 
         close();

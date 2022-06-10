@@ -13,6 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PickerProcessedInput {
+    private transient String id;
     private String picker_name;
     private String active_since;
     private List<ArticleProcessedInput> picks;
