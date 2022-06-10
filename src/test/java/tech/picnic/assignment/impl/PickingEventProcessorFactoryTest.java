@@ -24,7 +24,6 @@ import tech.picnic.assignment.api.EventProcessorFactory;
 import tech.picnic.assignment.api.StreamProcessor;
 
 final class PickingEventProcessorFactoryTest {
-    @Disabled
     @ParameterizedTest
     @MethodSource("happyPathTestCaseInputProvider")
     void testHappyPath(
