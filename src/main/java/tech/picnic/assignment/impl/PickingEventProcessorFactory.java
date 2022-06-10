@@ -9,7 +9,6 @@ import tech.picnic.assignment.api.StreamProcessor;
 public final class PickingEventProcessorFactory implements EventProcessorFactory {
     @Override
     public StreamProcessor createProcessor(int maxEvents, Duration maxTime) {
-        throw new UnsupportedOperationException(
-                "Please implement me; see README.md for the specification");
+        return new ConcreteStreamProcessor(maxEvents, maxTime);
     }
 }
