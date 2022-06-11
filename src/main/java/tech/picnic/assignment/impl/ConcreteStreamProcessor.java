@@ -12,6 +12,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static tech.picnic.assignment.model.PickerProcessedInput.getPickerProcessedInputs;
 import static tech.picnic.assignment.model.PickerProcessedInput.toJson;
 
 public class ConcreteStreamProcessor implements StreamProcessor {
@@ -53,19 +54,7 @@ public class ConcreteStreamProcessor implements StreamProcessor {
         }
         reader.close();
 
-        List<String> temperatureZones = new ArrayList<>();
-        // We can have custom logic to determine the temperature zones to filter by.
-        temperatureZones.add("ambient");
-
-        List<PickerProcessedInput> pickerProcessedInputs = picks.stream()
-                .filter(pick -> temperatureZones.contains(pick.getArticle().getTemperature_zone()))
-                .peek(pick -> pick.getArticle().makeNameUpperCase())
-                .collect(Collectors.groupingBy(Pick::getPicker))
-                .entrySet().stream()
-                .map(PickerProcessedInput::new)
-                .sorted(Comparator.comparing(PickerProcessedInput::getActive_since).thenComparing(PickerProcessedInput::getId))
-                .collect(Collectors.toList());
-
+        List<PickerProcessedInput> pickerProcessedInputs = getPickerProcessedInputs(picks);
 
         toJson(sink, pickerProcessedInputs);
 
