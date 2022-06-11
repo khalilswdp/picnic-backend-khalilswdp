@@ -30,9 +30,10 @@ public class ConcreteStreamProcessor implements StreamProcessor {
         List<Pick> picks = new ArrayList<>();
 
         Instant start = Instant.now();
+        int eventCountLeft = this.maxEvents;
 
-        while(maxEvents > 0 && Duration.between(start, Instant.now()).compareTo(this.maxTime) <= 0 && reader.ready()) {
-            maxEvents--;
+        while(eventCountLeft > 0 && Duration.between(start, Instant.now()).compareTo(this.maxTime) <= 0 && reader.ready()) {
+            eventCountLeft--;
             String line = reader.readLine();
             if (line.equals("\n")) {
                 continue;
