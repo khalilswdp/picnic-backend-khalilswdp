@@ -8,9 +8,6 @@ import java.io.*;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 import static tech.picnic.assignment.model.PickerProcessedInput.getPickerProcessedInputs;
 import static tech.picnic.assignment.model.PickerProcessedInput.toJson;
