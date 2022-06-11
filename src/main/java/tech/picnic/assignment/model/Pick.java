@@ -18,7 +18,6 @@ public class Pick {
     public static Pick fromJson(String line) throws Exception {
         Gson gson = new Gson();
         Pick pick = gson.fromJson(line, Pick.class);
-        System.out.println(pick);
         return pick;
     }
 }
