@@ -1,34 +1,35 @@
 package tech.picnic.assignment.impl;
 
 import tech.picnic.assignment.api.StreamProcessor;
-import tech.picnic.assignment.model.ArticleProcessedInput;
 import tech.picnic.assignment.model.Pick;
-import tech.picnic.assignment.model.Picker;
 import tech.picnic.assignment.model.PickerProcessedInput;
 
 import java.io.*;
 import java.time.Duration;
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import static tech.picnic.assignment.model.PickerProcessedInput.getPickerProcessedInputs;
 import static tech.picnic.assignment.model.PickerProcessedInput.toJson;
 
-public class ConcreteStreamProcessor implements StreamProcessor {
+public class ConcreteStreamProcessor implements StreamProcessor, Runnable {
 
     int maxEvents;
+    ScheduledExecutorService executor;
 
     public ConcreteStreamProcessor(int maxEvents, Duration maxTime) {
         this.maxEvents = maxEvents;
+        executor = Executors.newScheduledThreadPool(1);
+        executor.schedule(this, maxTime.toMillis() , TimeUnit.MILLISECONDS);
+    }
 
-        new Timer().schedule(new TimerTask() {
-            @Override
-            public void run() {
-                close();
-            }
-        }, maxTime.toMillis());
-
+    @Override
+    public void run() {
+        System.out.println("Processing finished");
+        close();
+        executor.shutdown();
     }
 
     @Override
@@ -37,7 +38,7 @@ public class ConcreteStreamProcessor implements StreamProcessor {
         BufferedReader reader = new BufferedReader(new InputStreamReader(source));
 
         List<Pick> picks = new ArrayList<>();
-        while(reader.ready() && maxEvents != 0) {
+        while(maxEvents > 0 && reader.ready()) {
             maxEvents--;
             String line = reader.readLine();
             if (line.equals("\n")) {
