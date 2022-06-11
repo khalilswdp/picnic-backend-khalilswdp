@@ -53,8 +53,12 @@ public class ConcreteStreamProcessor implements StreamProcessor {
         }
         reader.close();
 
+        List<String> temperatureZones = new ArrayList<>();
+        // We can have custom logic to determine the temperature zones to filter by.
+        temperatureZones.add("ambient");
+
         List<PickerProcessedInput> pickerProcessedInputs = picks.stream()
-                .filter(pick -> pick.getArticle().getTemperature_zone().equals("ambient"))
+                .filter(pick -> temperatureZones.contains(pick.getArticle().getTemperature_zone()))
                 .peek(pick -> pick.getArticle().makeNameUpperCase())
                 .collect(Collectors.groupingBy(Pick::getPicker))
                 .entrySet().stream()
