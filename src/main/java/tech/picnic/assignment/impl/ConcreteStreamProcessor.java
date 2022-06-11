@@ -19,12 +19,10 @@ public class ConcreteStreamProcessor implements StreamProcessor {
 
     int maxEvents;
     Duration maxTime;
-    Instant start;
 
     public ConcreteStreamProcessor(int maxEvents, Duration maxTime) {
         this.maxEvents = maxEvents;
         this.maxTime = maxTime;
-        start =  Instant.now();
     }
 
     @Override
@@ -34,8 +32,9 @@ public class ConcreteStreamProcessor implements StreamProcessor {
 
         List<Pick> picks = new ArrayList<>();
 
+        Instant start = Instant.now();
 
-        while(maxEvents > 0 && Duration.between(this.start, Instant.now()).compareTo(this.maxTime) <= 0 && reader.ready()) {
+        while(maxEvents > 0 && Duration.between(start, Instant.now()).compareTo(this.maxTime) <= 0 && reader.ready()) {
             maxEvents--;
             String line = reader.readLine();
             if (line.equals("\n")) {
