@@ -58,14 +58,7 @@ public class ConcreteStreamProcessor implements StreamProcessor {
                 .peek(pick -> pick.getArticle().makeNameUpperCase())
                 .collect(Collectors.groupingBy(Pick::getPicker))
                 .entrySet().stream()
-                .map(entry -> new PickerProcessedInput(
-                        entry.getKey().getId(),
-                        entry.getKey().getName(),
-                        entry.getKey().getActive_since(),
-                        entry.getValue().stream().map(
-                                pick -> new ArticleProcessedInput(
-                                        pick.getArticle().getName(),
-                                        pick.getTimestamp())).collect(Collectors.toList())))
+                .map(PickerProcessedInput::new)
                 .sorted(Comparator.comparing(PickerProcessedInput::getActive_since).thenComparing(PickerProcessedInput::getId))
                 .collect(Collectors.toList());
 

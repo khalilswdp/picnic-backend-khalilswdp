@@ -10,4 +10,9 @@ import lombok.NoArgsConstructor;
 public class ArticleProcessedInput {
     private String article_name;
     private String timestamp;
+
+    public ArticleProcessedInput(Pick pick) {
+        this.article_name = pick.getArticle().getName();
+        this.timestamp = pick.getTimestamp();
+    }
 }
