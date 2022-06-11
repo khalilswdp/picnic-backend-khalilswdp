@@ -6,6 +6,7 @@ import tech.picnic.assignment.model.PickerProcessedInput;
 
 import java.io.*;
 import java.time.Duration;
+import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -14,22 +15,16 @@ import java.util.concurrent.TimeUnit;
 import static tech.picnic.assignment.model.PickerProcessedInput.getPickerProcessedInputs;
 import static tech.picnic.assignment.model.PickerProcessedInput.toJson;
 
-public class ConcreteStreamProcessor implements StreamProcessor, Runnable {
+public class ConcreteStreamProcessor implements StreamProcessor {
 
     int maxEvents;
-    ScheduledExecutorService executor;
+    Duration maxTime;
+    Instant start;
 
     public ConcreteStreamProcessor(int maxEvents, Duration maxTime) {
         this.maxEvents = maxEvents;
-        executor = Executors.newScheduledThreadPool(1);
-        executor.schedule(this, maxTime.toMillis() , TimeUnit.MILLISECONDS);
-    }
-
-    @Override
-    public void run() {
-        System.out.println("Processing finished");
-        close();
-        executor.shutdown();
+        this.maxTime = maxTime;
+        start =  Instant.now();
     }
 
     @Override
@@ -38,13 +33,14 @@ public class ConcreteStreamProcessor implements StreamProcessor, Runnable {
         BufferedReader reader = new BufferedReader(new InputStreamReader(source));
 
         List<Pick> picks = new ArrayList<>();
-        while(maxEvents > 0 && reader.ready()) {
+
+
+        while(maxEvents > 0 && Duration.between(this.start, Instant.now()).compareTo(this.maxTime) <= 0 && reader.ready()) {
             maxEvents--;
             String line = reader.readLine();
             if (line.equals("\n")) {
                 continue;
             }
-            // Unmarshal/Deserialize the JSON. and create a Pick object. and add it to the picks list
             try {
                 Pick pick = Pick.fromJson(line);
                 picks.add(pick);
