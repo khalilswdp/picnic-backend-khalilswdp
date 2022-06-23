@@ -51,8 +51,6 @@ public class ConcreteStreamProcessor implements StreamProcessor {
         List<PickerProcessedInput> pickerProcessedInputs = getPickerProcessedInputs(picks);
 
         toJson(sink, pickerProcessedInputs);
-
-        close();
     }
 
     @Override
